@@ -1,0 +1,122 @@
+How to Run BoltVulnScanner
+==========================
+
+1. Installation
+---------------
+
+Option 1: Using pip
+------------------
+pip install -r requirements.txt
+
+For optional features (PDF reports, headless browser):
+pip install -r requirements-optional.txt
+
+Option 2: Using Poetry (Recommended)
+------------------------------------
+# Install Poetry if you haven't already
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Install dependencies
+poetry install
+
+# For optional features
+poetry install --extras "pdf headless tls"
+
+2. Running the Scanner
+----------------------
+
+CLI Usage:
+----------
+# Run a basic scan
+boltvulnscan scan --target http://example.com --checks xss,sqli
+
+# Run a full active scan (requires consent)
+boltvulnscan scan --target http://example.com --enable-active --confirm-legal "I CONSENT TO ACTIVE TESTS"
+
+# Generate reports from previous scan
+boltvulnscan report --input reports/scan_20231201_120000/report.json --format md,pdf
+
+# Launch the web UI
+boltvulnscan ui
+
+Web UI Usage:
+-------------
+# Launch the Streamlit web UI
+boltvulnscan ui
+
+# Or directly
+streamlit run src/boltvuln/streamlit_app.py
+
+3. Docker Usage
+---------------
+
+Building the Image:
+------------------
+docker build -t boltvulnscanner .
+
+Running with Docker:
+-------------------
+# Run a scan
+docker run --rm -v $(pwd)/reports:/app/reports boltvulnscanner scan --target http://example.com
+
+# Run with active consent
+docker run --rm -v $(pwd)/reports:/app/reports boltvulnscanner scan --target http://example.com --enable-active --confirm-legal "I CONSENT TO ACTIVE TESTS"
+
+# Launch the web UI
+docker run --rm -p 8501:8501 boltvulnscanner ui
+
+Docker Compose:
+---------------
+# Start with docker-compose
+docker-compose up
+
+# Run a scan
+docker-compose run --rm scanner scan --target http://example.com
+
+4. Testing
+----------
+
+Unit Tests:
+----------
+# Run unit tests
+pytest tests/
+
+# Run with coverage
+pytest --cov=src tests/
+
+Integration Tests:
+-----------------
+# Run integration tests (requires CI_ALLOW_INTEGRATION=true)
+CI_ALLOW_INTEGRATION=true pytest tests/integration/
+
+5. Configuration
+----------------
+
+Configuration File:
+------------------
+The config.yaml file contains default settings for all scanner modules.
+
+Credentials:
+-----------
+For external services, copy creds.example.yaml to creds.yaml and add your credentials.
+
+6. Output
+---------
+
+Reports are saved in the 'reports/' directory with the following structure:
+reports/
+└── scan_20231201_120000/
+    ├── report_20231201_120000.json
+    ├── report_20231201_120000.md
+    ├── report_20231201_120000.pdf (if generated)
+    └── report_20231201_120000.zip
+
+7. Legal and Ethical Usage
+--------------------------
+
+IMPORTANT: Only scan websites you own or have explicit permission to test.
+
+Active scanning requires explicit consent:
+--confirm-legal "I CONSENT TO ACTIVE TESTS"
+
+Always follow responsible disclosure practices when reporting vulnerabilities.

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Target for BoltVulnScanner</title>
+    <!-- Intentionally missing security headers for testing -->
+</head>
+<body>
+    <h1>Sample Target Page</h1>
+    <p>This is a sample target page for testing BoltVulnScanner.</p>
+    
+    <!-- Form with potential XSS vulnerability -->
+    <form action="/search" method="GET">
+        <label for="query">Search:</label>
+        <input type="text" id="query" name="q" value="">
+        <input type="submit" value="Search">
+    </form>
+    
+    <!-- Form with potential SQLi vulnerability -->
+    <form action="/login" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+        <input type="submit" value="Login">
+    </form>
+    
+    <!-- Link with potential open redirect -->
+    <a href="/redirect?url=http://example.com">External Link</a>
+    
+    <!-- Directory traversal test -->
+    <a href="/download?file=../../etc/passwd">Download File</a>
+    
+    <!-- CSRF vulnerable form (missing token) -->
+    <form action="/transfer" method="POST">
+        <label for="amount">Amount:</label>
+        <input type="text" id="amount" name="amount">
+        <label for="to">To Account:</label>
+        <input type="text" id="to" name="to">
+        <input type="submit" value="Transfer">
+    </form>
+    
+    <!-- Command injection test -->
+    <form action="/ping" method="GET">
+        <label for="host">Host to ping:</label>
+        <input type="text" id="host" name="host">
+        <input type="submit" value="Ping">
+    </form>
+    
+    <!-- JavaScript with potential XSS -->
+    <script>
+        // Get query parameter and display it
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('q');
+        if (query) {
+            document.getElementById('result').innerHTML = 'Search results for: ' + query;
+        }
+    </script>
+    
+    <div id="result"></div>
+</body>
+</html>

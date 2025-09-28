@@ -1,0 +1,16 @@
+# BoltVulnScanner Credentials Example File
+# Copy this file to creds.yaml and fill in your actual credentials
+# This file is for documentation purposes only - do not commit real credentials
+
+# API keys for external services (if used)
+shodan_api_key: "your_shodan_api_key_here"
+virustotal_api_key: "your_virustotal_api_key_here"
+
+# Proxy settings (if needed)
+proxy:
+  http: "http://proxy.company.com:8080"
+  https: "https://proxy.company.com:8080"
+  username: "proxy_user"
+  password: "proxy_password"
+
+# Note: This file is .gitignored and should never be committed to version control

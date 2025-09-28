@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  scanner:
+    build: .
+    image: boltvulnscanner:latest
+    volumes:
+      - ./reports:/home/scanner/app/reports
+      - ./config.yaml:/home/scanner/app/config.yaml
+      - ./creds.yaml:/home/scanner/app/creds.yaml
+    environment:
+      - PYTHONPATH=/home/scanner/app/src
+    stdin_open: true
+    tty: true
+
+  ui:
+    build: .
+    image: boltvulnscanner:latest
+    command: ui
+    volumes:
+      - ./reports:/home/scanner/app/reports
+      - ./config.yaml:/home/scanner/app/config.yaml
+      - ./creds.yaml:/home/scanner/app/creds.yaml
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONPATH=/home/scanner/app/src
+
+  # Optional DVWA service for testing (commented out by default)
+  # dvwa:
+  #   image: vulnerables/web-dvwa
+  #   ports:
+  #     - "8080:80"
+  #   environment:
+  #     - RESET_DB=YES
+
+volumes:
+  reports:

@@ -1,0 +1,162 @@
+{
+  "scan_info": {
+    "timestamp": "20231201_120000",
+    "target": "http://example.com",
+    "modules": [
+      "crawler",
+      "ports",
+      "xss",
+      "sqli",
+      "tls",
+      "headers",
+      "dir_enum"
+    ],
+    "total_findings": 7
+  },
+  "summary": {
+    "total_findings": 7,
+    "confirmed_findings": 3,
+    "severity_breakdown": {
+      "critical": 1,
+      "high": 2,
+      "medium": 3,
+      "low": 1
+    },
+    "highest_severity": "critical"
+  },
+  "findings": [
+    {
+      "finding_id": "XSS-12345",
+      "title": "Reflected Cross-Site Scripting in Search Parameter",
+      "module": "xss",
+      "url": "http://example.com/search?q=<script>alert('XSS')</script>",
+      "parameter": "q",
+      "severity": "high",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N",
+      "poc": "Parameter 'q' with payload '<script>alert('XSS')</script>' was reflected in the response",
+      "reproduction_steps": "1. Navigate to http://example.com/search?q=<script>alert('XSS')</script>\n2. Observe that the payload is executed",
+      "impact": "An attacker could execute arbitrary JavaScript in the victim's browser, potentially stealing session cookies or performing actions on behalf of the user.",
+      "recommended_fix": "Properly escape and sanitize all user input before rendering it in HTML. Use Content Security Policy (CSP) headers to restrict script execution.",
+      "suggested_bounty": "$500-$2000",
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+      ],
+      "confirmed": true
+    },
+    {
+      "finding_id": "SQLI-67890",
+      "title": "SQL Injection (error-based)",
+      "module": "sqli",
+      "url": "http://example.com/login",
+      "parameter": "username",
+      "severity": "critical",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "poc": "Payload: ' OR '1'='1 caused SQL error in response",
+      "reproduction_steps": "1. Navigate to http://example.com/login\n2. Submit the payload in the username field\n3. Observe the SQL error",
+      "impact": "An attacker could extract sensitive data from the database, modify data, or execute administrative operations.",
+      "recommended_fix": "Use parameterized queries or prepared statements. Validate and sanitize all user input. Apply principle of least privilege to database accounts.",
+      "suggested_bounty": "$3000-$5000",
+      "references": [
+        "https://owasp.org/www-community/attacks/SQL_Injection",
+        "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+      ],
+      "confirmed": true
+    },
+    {
+      "finding_id": "HEADER-MISSING-CSP",
+      "title": "Missing Content-Security-Policy Header",
+      "module": "headers",
+      "url": "http://example.com/",
+      "parameter": "content-security-policy",
+      "severity": "high",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N",
+      "poc": "Header 'content-security-policy' is missing from the response",
+      "reproduction_steps": "1. Send a request to http://example.com/\n2. Check the response headers\n3. Observe that the 'content-security-policy' header is missing",
+      "impact": "The Content-Security-Policy header helps prevent XSS and other injection attacks.",
+      "recommended_fix": "Implement a Content Security Policy that restricts sources for scripts, styles, and other content. Example: Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'",
+      "suggested_bounty": "$500-$2000",
+      "references": [
+        "https://owasp.org/www-project-secure-headers/#content-security-policy",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html"
+      ],
+      "confirmed": false
+    },
+    {
+      "finding_id": "OPEN-REDIRECT-54321",
+      "title": "Open Redirect Vulnerability",
+      "module": "open_redirect",
+      "url": "http://example.com/redirect?url=https://evil.com",
+      "parameter": "url",
+      "severity": "medium",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:L/A:N",
+      "poc": "Parameter 'url' redirects to 'https://evil.com' when provided payload 'https://evil.com'",
+      "reproduction_steps": "1. Navigate to http://example.com/redirect?url=https://evil.com\n2. Observe that the response redirects to https://evil.com\n3. Note that this redirect can be controlled by user input",
+      "impact": "An attacker could redirect users to malicious sites, leading to phishing attacks or malware distribution.",
+      "recommended_fix": "Validate all redirect destinations against a whitelist of allowed URLs. Avoid allowing user input to control redirects directly.",
+      "suggested_bounty": "$200-$800",
+      "references": [
+        "https://owasp.org/www-community/attacks/Open_redirect",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html"
+      ],
+      "confirmed": true
+    },
+    {
+      "finding_id": "CSRF-MISSING-9876",
+      "title": "Missing CSRF Protection",
+      "module": "csrf",
+      "url": "http://example.com/transfer",
+      "parameter": "form-0",
+      "severity": "medium",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N",
+      "poc": "Form #0 on http://example.com/transfer (action: /transfer, method: POST) lacks CSRF protection",
+      "reproduction_steps": "1. Navigate to http://example.com/transfer\n2. Identify form #0 with action '/transfer' and method 'POST'\n3. Observe that the form lacks CSRF protection",
+      "impact": "Without CSRF protection, attackers could trick users into performing unintended actions on the application.",
+      "recommended_fix": "Implement CSRF tokens for all state-changing forms. Use the Synchronizer Token Pattern or Double Submit Cookie pattern.",
+      "suggested_bounty": "$200-$600",
+      "references": [
+        "https://owasp.org/www-community/attacks/csrf",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html"
+      ],
+      "confirmed": false
+    },
+    {
+      "finding_id": "DIR-ENUM-1111",
+      "title": "Accessible Directory/File Found: /admin",
+      "module": "dir_enum",
+      "url": "http://example.com/admin",
+      "parameter": "path",
+      "severity": "medium",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+      "poc": "Found accessible resource at http://example.com/admin (Status: 200, Type: text/html, Size: 1234 bytes)",
+      "reproduction_steps": "1. Navigate to http://example.com/admin\n2. Observe the response\n3. Note that the resource is accessible",
+      "impact": "Exposed directories or files may contain sensitive information or reveal internal structure.",
+      "recommended_fix": "Restrict access to sensitive directories and files. Use proper authentication and authorization controls.",
+      "suggested_bounty": "$100-$500",
+      "references": [
+        "https://owasp.org/www-project-web-security-testing-guide/assets/archive/4.2/WSTG-v42-08-03-Directory_Brute_Forcing.html",
+        "https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration"
+      ],
+      "confirmed": false
+    },
+    {
+      "finding_id": "PORT-80",
+      "title": "Open Port Detected: 80 (http)",
+      "module": "ports",
+      "url": "http://example.com:80",
+      "parameter": "port",
+      "severity": "low",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:N",
+      "poc": "Port 80 is open on example.com",
+      "reproduction_steps": "1. Use nmap or similar tool to scan example.com\n2. Observe that port 80 is open",
+      "impact": "Service 'http' is exposed on port 80. This may increase attack surface.",
+      "recommended_fix": "Close port 80 if the service is not needed. If needed, ensure it is properly secured.",
+      "suggested_bounty": "$50-$200",
+      "references": [
+        "https://owasp.org/www-project-top-ten/",
+        "https://nmap.org/book/man-port-scanning-techniques.html"
+      ],
+      "confirmed": false
+    }
+  ]
+}

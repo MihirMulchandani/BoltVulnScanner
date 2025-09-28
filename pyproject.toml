@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "boltvulnscanner"
+version = "0.1.0"
+description = "Automated web vulnerability scanner with CLI and Streamlit UI"
+authors = ["Security Engineer <security@example.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+streamlit = "^1.29.0"
+pyyaml = "^6.0.1"
+jinja2 = "^3.1.2"
+markdown = "^3.5.1"
+weasyprint = {version = "^60.2", optional = true}
+playwright = {version = "^1.40.0", optional = true}
+sslyze = {version = "^5.1.1", optional = true}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+pytest-mock = "^3.12.0"
+black = "^23.11.0"
+flake8 = "^6.1.0"
+mypy = "^1.7.1"
+
+[tool.poetry.extras]
+pdf = ["weasyprint"]
+headless = ["playwright"]
+tls = ["sslyze"]
+
+[tool.poetry.scripts]
+boltvulnscan = "boltvuln.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
